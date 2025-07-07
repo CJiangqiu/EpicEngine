@@ -1,0 +1,104 @@
+plugins {
+    id 'idea'
+    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
+
+}
+
+version = '1.0.0'
+group = 'com.epic_engine'
+archivesBaseName = 'epic_engine'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+repositories {
+    mavenCentral()
+    maven {
+        url = "https://maven.minecraftforge.net/"
+    }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        name = "Progwml6's maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+    maven {
+        name = "SpongePowered"
+        url = "https://repo.spongepowered.org/repository/maven-public/"
+    }
+}
+minecraft {
+    mappings channel: 'official', version: '1.20.1'
+
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    copyIdeResources = true
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.3.0'
+
+    implementation 'org.ow2.asm:asm:9.2'
+    implementation 'org.ow2.asm:asm-commons:9.2'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    implementation 'org.reflections:reflections:0.9.12'
+    implementation 'org.openjfx:javafx-media:17.0.2'
+    implementation 'org.openjfx:javafx-swing:17.0.2'
+    implementation 'org.openjfx:javafx-graphics:17.0.2'
+    implementation 'org.openjfx:javafx-controls:17.0.2'
+    implementation fg.deobf("curse.maven:jei-238222:6075247")
+    implementation fg.deobf("curse.maven:jade-324717:5876199")
+    implementation fg.deobf("curse.maven:geckolib-388172:5675221")
+    implementation fg.deobf("curse.maven:curios-309927:6058834")
+}
+
+mixin {
+    add sourceSets.main, "mixins.epic_engine.refmap.json"
+    config "mixins.epic_engine.json"
+    config "mixins.epic_engine-custom.json"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+
+

@@ -1,0 +1,6 @@
+{
+  "parent": "item/handheld",
+  "textures": {
+    "layer0": "epic_engine:item/staff_of_infinity"
+  }
+}

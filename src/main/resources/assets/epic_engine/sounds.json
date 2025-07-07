@@ -1,0 +1,18 @@
+{
+  "wind_sound": {
+    "sounds": [
+      {
+        "name": "epic_engine:wind_sound",
+        "stream": false
+      }
+    ]
+  },
+  "worlds_throat": {
+    "sounds": [
+      {
+        "name": "epic_engine:worlds_throat",
+        "stream": true
+      }
+    ]
+  }
+}

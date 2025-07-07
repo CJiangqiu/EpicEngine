@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_17",
+  "package": "com.epic_engine.mixin",
+  "mixins": [
+    "DimensionTypeMixin",
+    "NoiseChunkBiomeMixin",
+    "NoiseRouterMixin",
+    "NoiseSettingsMixin"
+  ],
+  "client": [
+  ],
+  "server": []
+}
