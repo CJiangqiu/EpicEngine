@@ -5,10 +5,10 @@ A Minecraft mod that enhances terrain generation with majestic mountains and pro
 ## ✅ Current Features
 
 ### 🏔️ Enhanced Terrain Generation
-- **Majestic Mountain Generation**: Creates continuous towering mountains beyond vanilla height limits
-- **Biome-Aware Terrain**: Specialized terrain optimization for mountain biomes
+- **Enhanced Mountain Heights**: Increases the height difference between peaks and ground in vanilla mountains
+- **Continuous Mountain Ranges**: Uses Perlin noise algorithms to create more majestic and continuous mountain landscapes
 - **Configurable World Height**: Customize maximum and minimum world heights
-- **Advanced Mountain Algorithm**: Uses Perlin noise and ridge algorithms for natural mountain ranges
+- **Mountain Biome Focus**: Specifically enhances mountain biomes while preserving other terrain types
 
 ### 🎨 Interface Customization
 - **Custom Main Menu**: Personalize background images and title graphics
