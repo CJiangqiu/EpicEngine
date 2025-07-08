@@ -24,217 +24,190 @@ import java.io.InputStream;
 import java.nio.file.Files;
 
 /**
- * 主界面自定义Mixin
- * 用于替换主界面背景和标题图像
+ * 只负责背景与标题的替换
  */
 @Mixin(TitleScreen.class)
 public class MainMenuMixin {
-    @Unique
-    private static final Logger eJRA$LOGGER = LogManager.getLogger();
 
-    // 自定义资源
-    @Unique
-    private ResourceLocation eJRA$customBackground = null;
-    @Unique
-    private ResourceLocation eJRA$customTitle = null;
-    @Unique
-    private boolean eJRA$customBackgroundLoaded = false;
-    @Unique
-    private boolean eJRA$customTitleLoaded = false;
-    @Unique
-    private boolean eJRA$initializeAttempted = false;
+    /* -------------------- 日志与状态 -------------------- */
+    @Unique private static final Logger epicEngine$LOGGER = LogManager.getLogger();
 
-    // 图像尺寸信息
-    @Unique
-    private int eJRA$titleWidth = 0;
-    @Unique
-    private int eJRA$titleHeight = 0;
+    @Unique private ResourceLocation epicEngine$customBackground = null;
+    @Unique private ResourceLocation epicEngine$customTitle      = null;
 
-    /**
-     * 在初始化主界面时加载自定义资源
-     */
-    @Inject(method = "init", at = @At("HEAD"))
-    private void onInit(CallbackInfo ci) {
-        if (!eJRA$initializeAttempted) {
-            eJRA$initializeAttempted = true;
-            if (eJRA$shouldUseCustomMainMenu()) {
-                // 确保配置目录和默认资源已初始化
-                EpicEngineCustomConfig.initializeResources();
-                // 加载自定义资源
-                eJRA$loadCustomResources();
-            }
-        }
+    @Unique private boolean epicEngine$customBackgroundLoaded = false;
+    @Unique private boolean epicEngine$customTitleLoaded      = false;
+    @Unique private boolean epicEngine$initializeAttempted    = false;
+
+    /* 标题尺寸 */
+    @Unique private int epicEngine$titleWidth  = 0;
+    @Unique private int epicEngine$titleHeight = 0;
+
+    /* -------------------- 初始化：加载资源 -------------------- */
+    @Inject(method = "init", at = @At("TAIL"))
+    private void epicEngine$onInit(CallbackInfo ci) {
+        if (epicEngine$initializeAttempted) return;
+        epicEngine$initializeAttempted = true;
+
+        if (!epicEngine$shouldUseCustomMainMenu()) return;
+
+        EpicEngineCustomConfig.initializeResources();
+        epicEngine$loadCustomResources();
     }
 
-    /**
-     * 在渲染前检查是否使用自定义背景
-     * 注意: Minecraft 1.20.1 使用GuiGraphics而不是PoseStack
-     */
-    @Inject(method = "render", at = @At("HEAD"))
-    private void onRenderStart(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (eJRA$shouldUseCustomMainMenu() && eJRA$customBackgroundLoaded) {
-            eJRA$renderCustomBackground(guiGraphics);
+    /* -------------------- 接管 render -------------------- */
+    @Inject(method = "render",
+            at     = @At("HEAD"),
+            cancellable = true)
+    private void epicEngine$onRenderStart(GuiGraphics guiGraphics,
+                                          int mouseX, int mouseY, float partialTicks,
+                                          CallbackInfo ci) {
+
+        /* 若未启用或资源未加载成功 → 走原版逻辑 */
+        if (!epicEngine$shouldUseCustomMainMenu() ||
+                (!epicEngine$customBackgroundLoaded && !epicEngine$customTitleLoaded)) {
+            return;
         }
+
+        /* 1. 背景 */
+        if (epicEngine$customBackgroundLoaded) {
+            epicEngine$renderCustomBackground(guiGraphics);
+        } else {                                   // 后备渐变
+            epicEngine$renderOriginalBackground(guiGraphics);
+        }
+
+        /* 2. 原版 UI & 文字（全部渲染，包含 Mojang/版权行） */
+        TitleScreen self = (TitleScreen)(Object)this;
+        self.renderables.forEach(r -> r.render(guiGraphics, mouseX, mouseY, partialTicks));
+
+        /* 3. 自定义标题 */
+        if (epicEngine$customTitleLoaded) {
+            epicEngine$renderCustomTitle(guiGraphics);
+        }
+
+        /* ——全部完成，阻止原版 render—— */
+        ci.cancel();
     }
 
-    /**
-     * 在正常渲染完成后渲染自定义标题
-     */
-    @Inject(method = "render", at = @At("RETURN"))
-    private void afterRender(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (eJRA$shouldUseCustomMainMenu() && eJRA$customTitleLoaded) {
-            eJRA$renderCustomTitle(guiGraphics);
-        }
-    }
-
-    /**
-     * 加载自定义资源
-     */
+    /* -------------------- 自定义背景 -------------------- */
     @Unique
-    private void eJRA$loadCustomResources() {
+    private void epicEngine$renderCustomBackground(GuiGraphics guiGraphics) {
+        int sw = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        int sh = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+
+        guiGraphics.blit(epicEngine$customBackground,
+                0, 0, sw, sh,      // 目标矩形
+                0F, 0F, 1024, 1024,// 纹理采样
+                1024, 1024);       // 纹理尺寸
+    }
+
+    /* 后备渐变背景（若自定义失败） */
+    @Unique
+    private void epicEngine$renderOriginalBackground(GuiGraphics guiGraphics) {
+        int sw = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        int sh = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        guiGraphics.fillGradient(0, 0, sw, sh, 0xFF0F0F23, 0xFF0F0F23);
+    }
+
+    /* -------------------- 自定义标题 -------------------- */
+    @Unique
+    private void epicEngine$renderCustomTitle(GuiGraphics guiGraphics) {
         try {
-            // 检查配置目录是否存在
-            File configDir = new File(FMLPaths.CONFIGDIR.get().toFile(), "epic_engine");
-            if (!configDir.exists()) {
-                eJRA$LOGGER.info("EJRA config directory not found, attempting to create it");
-                configDir.mkdirs();
-                // 初始化默认资源
-                EpicEngineCustomConfig.initializeResources();
-            }
+            int sw = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+            int sh = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 
-            // 加载背景
+            int ow = Math.max(1, epicEngine$titleWidth);
+            int oh = Math.max(1, epicEngine$titleHeight);
+
+            float scale = Math.min((sw * 0.8F) / ow, (sh * 0.15F) / oh);
+            scale = Math.max(scale, 0.5F);
+
+            int drawW = (int)(ow * scale);
+            int drawH = (int)(oh * scale);
+            int x = (sw - drawW) / 2;
+            int y = 30;
+
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(x, y, 0);
+            guiGraphics.pose().scale(scale, scale, 1F);
+            guiGraphics.blit(epicEngine$customTitle,
+                    0, 0,
+                    0, 0,
+                    ow, oh,
+                    ow, oh);
+            guiGraphics.pose().popPose();
+
+        } catch (Exception e) {
+            epicEngine$LOGGER.error("Error rendering custom title", e);
+        }
+    }
+
+    /* -------------------- 资源加载 -------------------- */
+    @Unique
+    private void epicEngine$loadCustomResources() {
+        try {
+            File cfgDir = new File(FMLPaths.CONFIGDIR.get().toFile(), "epic_engine");
+            if (!cfgDir.exists()) cfgDir.mkdirs();
+
+            /* 背景 */
             File bgFile = EpicEngineCustomConfig.getTextureFile(
                     EpicEngineCustomConfig.MAIN_MENU_BACKGROUND.get());
-
             if (EpicEngineCustomConfig.fileExists(bgFile)) {
-                try {
-                    // 加载为NativeImage
-                    NativeImage nativeImage = eJRA$loadImage(bgFile);
-                    if (nativeImage != null) {
-                        DynamicTexture texture = new DynamicTexture(nativeImage);
-                        eJRA$customBackground = Minecraft.getInstance().getTextureManager()
-                                .register("epic_engine:custom_background", texture);
-                        eJRA$customBackgroundLoaded = true;
-                        eJRA$LOGGER.info("Custom main menu background loaded from: {}", bgFile.getPath());
-                    }
-                } catch (Exception e) {
-                    eJRA$LOGGER.error("Failed to load custom background: {}", bgFile.getPath(), e);
+                NativeImage img = epicEngine$readImage(bgFile);
+                if (img != null) {
+                    epicEngine$customBackground =
+                            new ResourceLocation("epic_engine", "custom_background");
+                    Minecraft.getInstance().getTextureManager()
+                            .register(epicEngine$customBackground, new DynamicTexture(img));
+                    epicEngine$customBackgroundLoaded = true;
                 }
-            } else {
-                eJRA$LOGGER.info("Custom background file not found: {}", bgFile.getPath());
             }
 
-            // 加载标题
+            /* 标题 */
             File titleFile = EpicEngineCustomConfig.getTextureFile(
                     EpicEngineCustomConfig.MAIN_MENU_TITLE_IMAGE.get());
-
             if (EpicEngineCustomConfig.fileExists(titleFile)) {
-                try {
-                    // 加载为NativeImage
-                    NativeImage nativeImage = eJRA$loadImage(titleFile);
-                    if (nativeImage != null) {
-                        // 保存标题尺寸
-                        eJRA$titleWidth = nativeImage.getWidth();
-                        eJRA$titleHeight = nativeImage.getHeight();
-
-                        DynamicTexture texture = new DynamicTexture(nativeImage);
-                        eJRA$customTitle = Minecraft.getInstance().getTextureManager()
-                                .register("epic_engine:custom_title", texture);
-                        eJRA$customTitleLoaded = true;
-                        eJRA$LOGGER.info("Custom main menu title loaded: {}x{} from: {}",
-                               eJRA$titleWidth, eJRA$titleHeight, titleFile.getPath());
-                    }
-                } catch (Exception e) {
-                    eJRA$LOGGER.error("Failed to load custom title: {}", titleFile.getPath(), e);
+                NativeImage img = epicEngine$readImage(titleFile);
+                if (img != null) {
+                    epicEngine$titleWidth  = img.getWidth();
+                    epicEngine$titleHeight = img.getHeight();
+                    epicEngine$customTitle =
+                            new ResourceLocation("epic_engine", "custom_title");
+                    Minecraft.getInstance().getTextureManager()
+                            .register(epicEngine$customTitle, new DynamicTexture(img));
+                    epicEngine$customTitleLoaded = true;
                 }
-            } else {
-                eJRA$LOGGER.info("Custom title file not found: {}", titleFile.getPath());
             }
+
         } catch (Exception e) {
-            eJRA$LOGGER.error("Error during custom resource loading", e);
+            epicEngine$LOGGER.error("Error loading custom resources", e);
         }
     }
 
-    /**
-     * 将文件加载为NativeImage
-     * 返回null而不是抛出异常，以增强容错性
-     */
     @Unique
-    private NativeImage eJRA$loadImage(File file) {
-        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
-            return NativeImage.read(inputStream);
+    private NativeImage epicEngine$readImage(File file) {
+        try (InputStream in = Files.newInputStream(file.toPath())) {
+            return NativeImage.read(in);
         } catch (IOException e) {
-            eJRA$LOGGER.error("Error loading image: {}", file.getPath(), e);
+            epicEngine$LOGGER.error("Failed to read image: {}", file.getPath(), e);
             return null;
         }
     }
 
-    /**
-     * 渲染自定义背景
-     */
+    /* -------------------- 配置开关 -------------------- */
     @Unique
-    private void eJRA$renderCustomBackground(GuiGraphics guiGraphics) {
-        try {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-            // 绘制全屏图像，适应当前窗口尺寸
-            int width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-            int height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
-
-            // 1.20.1使用GuiGraphics.blit
-            guiGraphics.blit(eJRA$customBackground, 0, 0, 0, 0, width, height);
-        } catch (Exception e) {
-            eJRA$LOGGER.error("Error rendering custom background", e);
-        }
-    }
-
-    /**
-     * 渲染自定义标题
-     */
-    @Unique
-    private void eJRA$renderCustomTitle(GuiGraphics guiGraphics) {
-        try {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-            // 使用已保存的标题尺寸
-            int titleWidth = eJRA$titleWidth;
-            int titleHeight = eJRA$titleHeight;
-
-            // 如果未获取到尺寸，使用默认值
-            if (titleWidth <= 0 || titleHeight <= 0) {
-                titleWidth = 1024;  // 原版标题默认尺寸
-                titleHeight = 256;
-            }
-
-            // 计算居中位置
-            int width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-            int x = (width - titleWidth) / 2;
-            int y = 30; // 标题Y位置
-
-            // 绘制标题
-            guiGraphics.blit(eJRA$customTitle, x, y, 0, 0, titleWidth, titleHeight);
-        } catch (Exception e) {
-            eJRA$LOGGER.error("Error rendering custom title", e);
-        }
-    }
-
-    /**
-     * 检查是否应该使用自定义主界面
-     */
-    @Unique
-    private boolean eJRA$shouldUseCustomMainMenu() {
-        try {
-            return EpicEngineCustomConfig.ENABLE_CUSTOMIZATION.get() &&
-                    EpicEngineCustomConfig.ENABLE_CUSTOM_MAIN_MENU.get();
-        } catch (Exception e) {
-            eJRA$LOGGER.error("Error checking main menu config", e);
-            return false;
-        }
+    private boolean epicEngine$shouldUseCustomMainMenu() {
+        return EpicEngineCustomConfig.ENABLE_CUSTOMIZATION.get()
+                && EpicEngineCustomConfig.ENABLE_CUSTOM_MAIN_MENU.get();
     }
 }

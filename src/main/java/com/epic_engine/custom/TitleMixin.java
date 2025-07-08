@@ -24,8 +24,8 @@ public class TitleMixin {
         cancellable = true
     )
     private void onUpdateTitle(CallbackInfo ci) {
-        if (eJRA$shouldUseCustomTitle()) {
-            eJRA$applyOurCustomTitle();
+        if (epicEngine$shouldUseCustomTitle()) {
+            epicEngine$applyOurCustomTitle();
             ci.cancel();
         }
     }
@@ -39,14 +39,14 @@ public class TitleMixin {
     )
     private void onConstructed(CallbackInfo ci) {
         Minecraft minecraft = (Minecraft)(Object)this;
-        minecraft.tell(this::eJRA$applyOurCustomTitle);
+        minecraft.tell(this::epicEngine$applyOurCustomTitle);
     }
 
     /**
      * 检查是否应该使用自定义标题
      */
     @Unique
-    private boolean eJRA$shouldUseCustomTitle() {
+    private boolean epicEngine$shouldUseCustomTitle() {
         try {
             return EpicEngineCustomConfig.ENABLE_CUSTOMIZATION.get() &&
                    EpicEngineCustomConfig.ENABLE_CUSTOM_WINDOW_TITLE.get();
@@ -59,12 +59,12 @@ public class TitleMixin {
      * 应用自定义标题
      */
     @Unique
-    private void eJRA$applyOurCustomTitle() {
+    private void epicEngine$applyOurCustomTitle() {
         try {
             Minecraft minecraft = (Minecraft)(Object)this;
 
-            if (minecraft.getWindow() != null && eJRA$shouldUseCustomTitle()) {
-                String customTitle = eJRA$getCustomTitle();
+            if (minecraft.getWindow() != null && epicEngine$shouldUseCustomTitle()) {
+                String customTitle = epicEngine$getCustomTitle();
 
                 if (customTitle != null && !customTitle.isEmpty()) {
                     minecraft.getWindow().setTitle(customTitle);
@@ -79,7 +79,7 @@ public class TitleMixin {
      * 获取自定义标题
      */
     @Unique
-    private String eJRA$getCustomTitle() {
+    private String epicEngine$getCustomTitle() {
         return EpicEngineCustomConfig.CUSTOM_WINDOW_TITLE.get();
     }
 }

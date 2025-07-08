@@ -55,7 +55,7 @@ public class EpicEngineMod {
 
         MinecraftForge.EVENT_BUS.register(this);
 
-        LOGGER.info("EJRA core initialized");
+        LOGGER.info("Epic Engine core initialized");
     }
 
     /**
@@ -63,7 +63,7 @@ public class EpicEngineMod {
      * safe to perform setup that depends on config values.
      */
     private void onCommonSetup(final FMLCommonSetupEvent event) {
-        LOGGER.info("EJRA common setup complete — config should be loaded now");
+        LOGGER.info("Epic Engine common setup complete — config should be loaded now");
         // Here you can put initialization logic that requires config,
         // e.g. schedule world-gen hooks, register custom serializers, etc.
     }

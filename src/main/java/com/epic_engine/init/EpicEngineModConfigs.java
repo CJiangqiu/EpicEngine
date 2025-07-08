@@ -19,14 +19,14 @@ public class EpicEngineModConfigs {
             ModLoadingContext.get().registerConfig(
                     ModConfig.Type.COMMON,
                     EpicEngineWorldConfig.CONFIG,
-                    "EJRA_World.toml"
+                    "Epic_Engine_World.toml"
             );
 
             // 注册自定义界面配置
             ModLoadingContext.get().registerConfig(
                     ModConfig.Type.CLIENT,
                     EpicEngineCustomConfig.CONFIG,
-                    "EJRA_Custom.toml"
+                    "Epic_Engine_Custom.toml"
             );
         });
     }

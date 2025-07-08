@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[47,)"
-license="Not specified"
+license="Anything Goes As Long As It’s Free Mod License (AGALAF-Mod) Version 2.0"
 
 [[mods]]
 modId="epic_engine"
@@ -9,6 +9,7 @@ displayName="Epic Engine"
 displayURL="None"
 credits="None"
 authors="CJianqgiu"
+description="A Minecraft mod crafted for my own modpack, it adds extensive custom features that overhaul vanilla gameplay."
 logoFile="assets/epic_engine/textures/logo.png"
 [[dependencies.epic_engine]]
     modId="minecraft"

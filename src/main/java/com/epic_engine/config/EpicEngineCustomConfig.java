@@ -19,10 +19,10 @@ public class EpicEngineCustomConfig {
     public static final ForgeConfigSpec CONFIG;
 
     // 资源目录路径
-    private static final File EJRA_DIR = new File(FMLPaths.CONFIGDIR.get().toFile(), "epic_engine");
-    private static final File TEXTURES_DIR = new File(EJRA_DIR, "textures");
-    private static final File VIDEOS_DIR = new File(EJRA_DIR, "videos");
-    private static final File SOUNDS_DIR = new File(EJRA_DIR, "sounds");
+    private static final File Epic_Engine_DIR = new File(FMLPaths.CONFIGDIR.get().toFile(), "epic_engine");
+    private static final File TEXTURES_DIR = new File(Epic_Engine_DIR, "textures");
+    private static final File VIDEOS_DIR = new File(Epic_Engine_DIR, "videos");
+    private static final File SOUNDS_DIR = new File(Epic_Engine_DIR, "sounds");
 
     // ======== 常规设置 ========
     /** 主开关。设为false时，所有自定义功能都将被禁用 */
@@ -66,9 +66,6 @@ public class EpicEngineCustomConfig {
 
     /** 自定义主界面标题图片文件名 */
     public static final ForgeConfigSpec.ConfigValue<String> MAIN_MENU_TITLE_IMAGE;
-
-    /** 自定义主界面版权文本 */
-    public static final ForgeConfigSpec.ConfigValue<String> MAIN_MENU_COPYRIGHT;
 
     /** 是否启用自定义按钮文本 */
     public static final ForgeConfigSpec.BooleanValue CUSTOM_BUTTON_TEXT;
@@ -133,7 +130,7 @@ public class EpicEngineCustomConfig {
                 .define("enableCustomWindowTitle", true);
         CUSTOM_WINDOW_TITLE = builder
                 .comment("Custom game window title text.")
-                .define("customWindowTitle", "Epic Journey:Rise of the Adventurers");
+                .define("customWindowTitle", "Epic Engine:A good tool to make your modpack!");
         builder.pop();
 
         // 加载界面设置
@@ -157,7 +154,7 @@ public class EpicEngineCustomConfig {
                 .comment("Custom loading tips list, randomly displayed during loading.")
                 .defineList("loadingTips",
                         Arrays.asList(
-                                "Tip: EJRA brings you more realistic mountains and terrain!",
+                                "Tip: Epic Engine brings you more realistic mountains and terrain!",
                                 "Tip: You can see farther from mountaintops!",
                                 "Tip: Remember to prepare for your adventure!",
                                 "Tip: Explore newly generated valleys and canyons!",
@@ -179,9 +176,6 @@ public class EpicEngineCustomConfig {
         MAIN_MENU_TITLE_IMAGE = builder
                 .comment("Custom main menu title image filename in config/epic_engine/textures/. Recommended size: 1024x256 with transparent background.")
                 .define("mainMenuTitleImage", "title.png");
-        MAIN_MENU_COPYRIGHT = builder
-                .comment("Custom main menu copyright text.")
-                .define("mainMenuCopyright", "Copyright CJiangqiu. Enhanced Java Realistic Adventure");
 
         // 按钮文本设置
         builder.push("buttons");
@@ -249,14 +243,14 @@ public class EpicEngineCustomConfig {
     private static void createDirectories() {
         try {
             // 创建主目录和子目录
-            EJRA_DIR.mkdirs();
+            Epic_Engine_DIR.mkdirs();
             TEXTURES_DIR.mkdirs();
             VIDEOS_DIR.mkdirs();
             SOUNDS_DIR.mkdirs();
 
-            LOGGER.info("EJRA resource directories created or verified");
+            LOGGER.info("Epic Engine resource directories created or verified");
         } catch (Exception e) {
-            LOGGER.error("Failed to create EJRA resource directories", e);
+            LOGGER.error("Failed to create Epic Engine resource directories", e);
         }
     }
 
@@ -274,9 +268,9 @@ public class EpicEngineCustomConfig {
             extractDefaultResourceIfNeeded("textures/custom/title.png", getTextureFile("title.png"));
             extractDefaultResourceIfNeeded("textures/custom/loading.png", getTextureFile("loading.png"));
 
-            LOGGER.info("EJRA default resources initialized");
+            LOGGER.info("Epic Engine default resources initialized");
         } catch (Exception e) {
-            LOGGER.error("Failed to initialize EJRA default resources", e);
+            LOGGER.error("Failed to initialize Epic Engine default resources", e);
         }
     }
 
