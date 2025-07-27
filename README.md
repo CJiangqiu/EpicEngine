@@ -1,6 +1,6 @@
-# Epic Engine: Rise of the Adventurers
+# Epic Engine
 
-A Minecraft mod that enhances terrain generation with majestic mountains and provides customizable interface features.
+A Minecraft mod that provides customizable interface features.
 
 ## ✅ Current Features
 Main Menu Customization: Custom backgrounds, title images, button layouts, and text components
