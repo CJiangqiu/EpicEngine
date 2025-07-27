@@ -1,0 +1,93 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "biome": "minecraft:jagged_peaks",
+      "level": "high"
+    },
+    {
+      "biome": "minecraft:frozen_peaks",
+      "level": "high"
+    },
+    {
+      "biome": "minecraft:stony_peaks",
+      "level": "high"
+    },
+    {
+      "biome": "minecraft:stone_peaks",
+      "level": "high"
+    },
+    {
+      "biome": "minecraft:snowy_peaks",
+      "level": "high"
+    },
+    {
+      "biome": "minecraft:snowy_slopes",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:windswept_hills",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:windswept_forest",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:windswept_gravelly_hills",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:mountain_meadow",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:mountain_grove",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:extreme_hills",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:extreme_hills_with_trees",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:extreme_hills_mutated",
+      "level": "mid"
+    },
+    {
+      "biome": "minecraft:old_growth_spruce_taiga",
+      "level": "low"
+    },
+    {
+      "biome": "minecraft:old_growth_pine_taiga",
+      "level": "low"
+    },
+    {
+      "biome": "minecraft:taiga",
+      "level": "low"
+    },
+    {
+      "biome": "minecraft:snowy_taiga",
+      "level": "low"
+    },
+    {
+      "biome": "minecraft:taiga_hills",
+      "level": "low"
+    },
+    {
+      "biome": "minecraft:taiga_mutated",
+      "level": "low"
+    },
+    {
+      "biome": "minecraft:mega_taiga",
+      "level": "low"
+    },
+    {
+      "biome": "minecraft:mega_taiga_hills",
+      "level": "low"
+    }
+  ]
+}

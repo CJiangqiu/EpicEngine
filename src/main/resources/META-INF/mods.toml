@@ -4,9 +4,9 @@ license="Anything Goes As Long As It’s Free Mod License (AGALAF-Mod) Version 2
 
 [[mods]]
 modId="epic_engine"
-version="1.0.0"
+version="1.0.4"
 displayName="Epic Engine"
-displayURL="None"
+displayURL="https://github.com/CJiangqiu/EpicEngine"
 credits="None"
 authors="CJianqgiu"
 description="A Minecraft mod crafted for my own modpack, it adds extensive custom features that overhaul vanilla gameplay."

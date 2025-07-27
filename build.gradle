@@ -5,7 +5,7 @@ plugins {
 
 }
 
-version = '1.0.0'
+version = '1.0.4'
 group = 'com.epic_engine'
 archivesBaseName = 'epic_engine'
 
@@ -87,13 +87,14 @@ dependencies {
     implementation fg.deobf("curse.maven:jei-238222:6075247")
     implementation fg.deobf("curse.maven:jade-324717:5876199")
     implementation fg.deobf("curse.maven:geckolib-388172:5675221")
+    implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
     implementation fg.deobf("curse.maven:curios-309927:6058834")
+
 }
 
 mixin {
     add sourceSets.main, "mixins.epic_engine.refmap.json"
     config "mixins.epic_engine.json"
-    config "mixins.epic_engine-custom.json"
 }
 
 tasks.withType(JavaCompile).configureEach {
